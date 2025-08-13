@@ -1,0 +1,17 @@
+{
+  "name": "flowfi",
+  "version": "0.1.0",
+  "description": "FlowFi - Consumer Payment Infrastructure with Smart Rewards on Morph L2",
+  "scripts": {
+    "dev": "cd app && npm run dev",
+    "build": "cd app && npm run build", 
+    "start": "cd app && npm run start",
+    "contracts:compile": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test",
+    "contracts:deploy": "cd contracts && forge script script/Deploy.s.sol --rpc-url $MORPH_RPC_URL --broadcast --verify",
+    "lint": "cd app && npm run lint"
+  },
+  "keywords": ["payfi", "morph", "consumer-finance", "payments", "defi"],
+  "author": "FlowFi Team",
+  "license": "MIT"
+}
