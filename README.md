@@ -4,6 +4,13 @@
 
 FlowFi is a consumer-facing payment platform that enables smart recurring payments, social split bills, and automatic rewards on Morph L2. It combines the best of PayFi and Consumer tracks to deliver real user value with innovative on-chain mechanics.
 
+## Contracts
+https://github.com/jintukumardas/FlowFi/tree/main/contracts/src
+- **FlowFi Core** ↔ Rewards Manager
+- **FlowFi Core** ↔ Split Payments  
+- **Rewards Manager** ↔ Yield Vault
+- **Yield Vault** ↔ USDT support added
+
 ## 🚀 Live Demo
 
 1. **Pay** → Make a payment to earn rewards
