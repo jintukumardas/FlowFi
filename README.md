@@ -6,12 +6,11 @@ FlowFi is a consumer-facing payment platform that enables smart recurring paymen
 
 ## 🚀 Live Demo
 
-**Try the 3-click demo:**
 1. **Pay** → Make a payment to earn rewards
 2. **Earn** → Receive FFI tokens with tier bonuses  
 3. **Stake** → Auto-stake for 10% APY yield
 
-**Demo URL:** *(will be deployed)*
+**Demo URL:** https://flow-fi-one.vercel.app
 
 ## 📋 Problem & Solution
 

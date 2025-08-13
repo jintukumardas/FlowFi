@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useAccount, useBalance } from 'wagmi'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,11 +9,36 @@ import Link from 'next/link'
 import { CONTRACT_ADDRESSES } from '@/lib/config'
 import { useFlowFi } from '@/hooks/useFlowFi'
 import { FlowFiIcon } from '@/components/FlowFiIcon'
+import { PaymentModal } from '@/components/PaymentModal'
+import { YieldVaultModal } from '@/components/YieldVaultModal'
+import { SplitModal } from '@/components/SplitModal'
+import { DashboardNav } from '@/components/DashboardNav'
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount()
   const { data: balance } = useBalance({ address })
-  const { demoPayment, demoSplit, demoStaking, isLoading, currentStep, hash, ffiBalance } = useFlowFi()
+  const { 
+    makePayment, 
+    createSplit, 
+    depositToVault, 
+    withdrawFromVault, 
+    isLoading, 
+    currentStep, 
+    hash, 
+    ffiBalance, 
+    vaultBalance, 
+    userRewards,
+    vaultYield,
+    userTier,
+    tierProgress,
+    totalPayments,
+    activeSplitsCount,
+    recentPayments,
+    stats
+  } = useFlowFi()
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const [isYieldModalOpen, setIsYieldModalOpen] = useState(false)
+  const [isSplitModalOpen, setIsSplitModalOpen] = useState(false)
 
   if (!isConnected) {
     return (
@@ -56,6 +82,8 @@ export default function DashboardPage() {
         </div>
       </nav>
 
+      <DashboardNav />
+
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
@@ -67,11 +95,11 @@ export default function DashboardPage() {
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Total Balance</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Total Payments</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{balance?.formatted?.slice(0, 6)} ETH</div>
-              <p className="text-xs text-gray-500">~${(parseFloat(balance?.formatted || '0') * 2500).toFixed(2)} USD</p>
+              <div className="text-2xl font-bold">{totalPayments} ETH</div>
+              <p className="text-xs text-gray-500">Wallet: {balance?.formatted?.slice(0, 6)} ETH</p>
             </CardContent>
           </Card>
 
@@ -82,18 +110,20 @@ export default function DashboardPage() {
             <CardContent>
               <div className="text-2xl font-bold">{ffiBalance} FFI</div>
               <p className="text-xs text-green-600">
-                {Number(ffiBalance) > 0 ? 'Ready to stake!' : 'Make payments to earn rewards'}
+                {Number(ffiBalance) > 0 ? 'Available to stake!' : 'Make payments to earn rewards'}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Active Splits</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Vault Balance</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-gray-500">No pending splits</p>
+              <div className="text-2xl font-bold">{vaultBalance} ETH</div>
+              <p className="text-xs text-blue-600">
+                {Number(vaultYield) > 0 ? `+${vaultYield} ETH yield earned` : '5% APY available'}
+              </p>
             </CardContent>
           </Card>
 
@@ -102,8 +132,16 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium text-gray-500">Tier Status</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">Bronze</div>
-              <p className="text-xs text-gray-500">1% reward bonus</p>
+              <div className="text-2xl font-bold text-orange-600">{userTier}</div>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-orange-600 h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${tierProgress.progress}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {tierProgress.progress < 100 ? `${(tierProgress.next - tierProgress.current).toFixed(3)} ETH to next tier` : 'Max tier reached!'}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -119,7 +157,7 @@ export default function DashboardPage() {
             <CardContent className="text-center">
               <Button 
                 className="w-full" 
-                onClick={demoPayment}
+                onClick={() => setIsPaymentModalOpen(true)}
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -141,21 +179,14 @@ export default function DashboardPage() {
               <CardDescription>Share expenses with friends</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={demoSplit}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {currentStep || 'Creating...'}
-                  </>
-                ) : (
-                  'Create Split'
-                )}
-              </Button>
+              <Link href="/dashboard/splits" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                >
+                  Manage Splits
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
@@ -166,21 +197,14 @@ export default function DashboardPage() {
               <CardDescription>View and stake FFI tokens</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={demoStaking}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {currentStep || 'Staking...'}
-                  </>
-                ) : (
-                  'View Rewards'
-                )}
-              </Button>
+              <Link href="/dashboard/rewards" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                >
+                  View Rewards
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
@@ -194,7 +218,7 @@ export default function DashboardPage() {
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => alert('Yield Vault: Auto-earn 5% APY on ETH, 8% on USDT. Demo coming soon!')}
+                onClick={() => setIsYieldModalOpen(true)}
                 disabled={isLoading}
               >
                 Manage Vault
@@ -225,46 +249,38 @@ export default function DashboardPage() {
           </Card>
         )}
 
-        {/* Demo Section */}
-        <Card className="mb-8 border-blue-200 bg-blue-50">
+        {/* Quick Actions */}
+        <Card className="mb-8 border-green-200 bg-green-50">
           <CardHeader>
-            <CardTitle className="text-blue-900">Demo Mode Active</CardTitle>
-            <CardDescription className="text-blue-700">
-              Try FlowFi's core features with test funds on Morph testnet. Real transactions on blockchain!
+            <CardTitle className="text-green-900">Quick Actions</CardTitle>
+            <CardDescription className="text-green-700">
+              Access FlowFi's core features with real smart contract interactions on Morph testnet
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
               <Button 
-                className="bg-blue-600 hover:bg-blue-700"
-                onClick={demoPayment}
-                disabled={isLoading}
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => setIsPaymentModalOpen(true)}
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {currentStep || 'Processing...'}
-                  </>
-                ) : (
-                  'Demo Payment to Coffee Shop'
-                )}
+                Make Payment
               </Button>
-              <Button 
-                variant="outline" 
-                className="border-blue-300 text-blue-700"
-                onClick={demoSplit}
-                disabled={isLoading}
-              >
-                {isLoading ? (currentStep || 'Creating...') : 'Create Demo Split Bill'}
-              </Button>
-              <Button 
-                variant="outline" 
-                className="border-blue-300 text-blue-700"
-                onClick={demoStaking}
-                disabled={isLoading}
-              >
-                {isLoading ? (currentStep || 'Staking...') : 'Stake Demo Rewards'}
-              </Button>
+              <Link href="/dashboard/splits">
+                <Button 
+                  variant="outline" 
+                  className="border-green-300 text-green-700 w-full"
+                >
+                  Manage Splits
+                </Button>
+              </Link>
+              <Link href="/dashboard/rewards">
+                <Button 
+                  variant="outline" 
+                  className="border-green-300 text-green-700 w-full"
+                >
+                  View Rewards
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -326,6 +342,46 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Modals */}
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          onPayment={(merchantAddress, amount, description) => {
+            makePayment(merchantAddress, amount, description)
+            setIsPaymentModalOpen(false)
+          }}
+          isLoading={isLoading}
+          currentStep={currentStep}
+        />
+
+        <YieldVaultModal
+          isOpen={isYieldModalOpen}
+          onClose={() => setIsYieldModalOpen(false)}
+          onDeposit={(amount) => {
+            depositToVault(amount)
+            setIsYieldModalOpen(false)
+          }}
+          onWithdraw={(amount) => {
+            withdrawFromVault(amount)
+            setIsYieldModalOpen(false)
+          }}
+          isLoading={isLoading}
+          currentStep={currentStep}
+          userBalance={balance?.formatted || '0'}
+          vaultBalance={vaultBalance}
+        />
+
+        <SplitModal
+          isOpen={isSplitModalOpen}
+          onClose={() => setIsSplitModalOpen(false)}
+          onCreateSplit={(totalAmount, description, participants, merchantAddress) => {
+            createSplit(totalAmount, description, participants, merchantAddress)
+            setIsSplitModalOpen(false)
+          }}
+          isLoading={isLoading}
+          currentStep={currentStep}
+        />
       </div>
     </div>
   )
