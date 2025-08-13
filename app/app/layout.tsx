@@ -22,6 +22,10 @@ export const metadata: Metadata = {
     title: 'FlowFi - Consumer Payment Infrastructure',
     description: 'Smart payments with rewards and social features on Morph L2',
   },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
