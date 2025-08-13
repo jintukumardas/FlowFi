@@ -34,12 +34,16 @@ FlowFi provides PayFi infrastructure with consumer focus:
 
 ### Smart Contracts (Morph L2)
 
-| Contract | Address | Purpose |
-|----------|---------|---------|
-| FlowFiCore | `0x...` | Main payment processing & merchant registry |
-| RewardsManager | `0x...` | FFI token, staking & tier management |  
-| SplitPayments | `0x...` | Social bill splitting & group management |
-| YieldVault | `0x...` | Automatic yield farming for idle funds |
+**Date:** August 13, 2025  
+**Network:** Morph Holesky Testnet (Chain ID: 2810)  
+**Deployer:** `0x67aB951437C38aB0ABfa9860eE894f34A935b4eB`
+
+| Contract | Address | Gas Used |
+|----------|---------|----------|
+| **FlowFi Core** | `0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3` | 2,080,706 |
+| **Rewards Manager** | `0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7` | 1,826,940 |
+| **Split Payments** | `0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d` | 2,943,510 |
+| **Yield Vault** | `0x3b4cAE62020487263Fc079312f9199a1b014BF6b` | 1,129,079 |
 
 ### Frontend Stack
 - **Next.js 14** with App Router
@@ -166,9 +170,9 @@ cd app && npm test
 ## 📡 Deployment
 
 ### Morph Testnet Configuration
-- **Chain ID:** 2710
+- **Chain ID:** 2810
 - **RPC:** https://rpc-quicknode-holesky.morphl2.io
-- **Explorer:** https://explorer-testnet.morphl2.io
+- **Explorer:** https://explorer-holesky.morphl2.io/
 - **Faucet:** https://morphfaucet.com
 
 ### Contract Verification

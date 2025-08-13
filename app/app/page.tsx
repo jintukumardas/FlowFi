@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Wallet, Zap, Users, Gift, TrendingUp, ArrowRight } from 'lucide-react'
+import { Wallet, Zap, Users, Gift, TrendingUp, ArrowRight, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
+import { CONTRACT_ADDRESSES } from '@/lib/config'
+import { FlowFiIcon } from '@/components/FlowFiIcon'
 
 export default function HomePage() {
   const { address, isConnected } = useAccount()
@@ -24,9 +26,16 @@ export default function HomePage() {
         }
       }
       // Simulate demo setup delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Redirect to dashboard after connection
+      if (isConnected) {
+        window.location.href = '/dashboard'
+      }
     } catch (error) {
       console.error('Demo setup error:', error)
+      // If connection fails, still redirect to dashboard
+      window.location.href = '/dashboard'
     } finally {
       setIsLoading(false)
     }
@@ -60,7 +69,7 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg"></div>
+          <FlowFiIcon />
           <span className="text-2xl font-bold text-gray-900">FlowFi</span>
         </div>
         
@@ -112,7 +121,7 @@ export default function HomePage() {
                 </>
               ) : (
                 <>
-                  Try Demo Mode
+                  Dashboard
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </>
               )}
@@ -197,6 +206,134 @@ export default function HomePage() {
             <div className="space-y-2">
               <div className="text-2xl font-bold text-purple-600">100%</div>
               <div className="text-sm text-gray-600">EVM compatible</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Smart Contracts Section */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Live Smart Contracts
+            </h2>
+            <p className="text-lg text-gray-600">
+              Deployed and verified on Morph Holesky Testnet (Chain ID: 2810)
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  FlowFi Core
+                  <a 
+                    href={`https://explorer-holesky.morphl2.io/address/${CONTRACT_ADDRESSES.FLOWFI_CORE}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                  </a>
+                </CardTitle>
+                <CardDescription>Main payment processing & merchant rewards</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-gray-100 p-3 rounded font-mono text-sm">
+                  {CONTRACT_ADDRESSES.FLOWFI_CORE}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  Rewards Manager
+                  <a 
+                    href={`https://explorer-holesky.morphl2.io/address/${CONTRACT_ADDRESSES.REWARDS_MANAGER}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                  </a>
+                </CardTitle>
+                <CardDescription>FFI token with staking & tier system</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-gray-100 p-3 rounded font-mono text-sm">
+                  {CONTRACT_ADDRESSES.REWARDS_MANAGER}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  Split Payments
+                  <a 
+                    href={`https://explorer-holesky.morphl2.io/address/${CONTRACT_ADDRESSES.SPLIT_PAYMENTS}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                  </a>
+                </CardTitle>
+                <CardDescription>Social bill splitting & group management</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-gray-100 p-3 rounded font-mono text-sm">
+                  {CONTRACT_ADDRESSES.SPLIT_PAYMENTS}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  Yield Vault
+                  <a 
+                    href={`https://explorer-holesky.morphl2.io/address/${CONTRACT_ADDRESSES.YIELD_VAULT}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                  </a>
+                </CardTitle>
+                <CardDescription>Auto yield farming for idle balances</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-gray-100 p-3 rounded font-mono text-sm">
+                  {CONTRACT_ADDRESSES.YIELD_VAULT}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500 mb-4">
+              All contracts are open source and verified on the block explorer
+            </p>
+            <div className="flex justify-center space-x-4">
+              <a 
+                href="https://explorer-holesky.morphl2.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              >
+                View on Morph Explorer →
+              </a>
+              <a 
+                href="https://morphfaucet.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-600 hover:text-green-800 text-sm font-medium"
+              >
+                Get Test ETH →
+              </a>
             </div>
           </div>
         </div>

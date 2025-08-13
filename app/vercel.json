@@ -1,0 +1,19 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "NEXT_PUBLIC_MORPH_RPC_URL": "https://rpc-quicknode-holesky.morphl2.io",
+    "NEXT_PUBLIC_CHAIN_ID": "2810",
+    "NEXT_PUBLIC_FLOWFI_CORE_ADDRESS": "0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3",
+    "NEXT_PUBLIC_REWARDS_MANAGER_ADDRESS": "0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7",
+    "NEXT_PUBLIC_SPLIT_PAYMENTS_ADDRESS": "0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d",
+    "NEXT_PUBLIC_YIELD_VAULT_ADDRESS": "0x3b4cAE62020487263Fc079312f9199a1b014BF6b"
+  },
+  "functions": {
+    "app/**/*.{js,ts,jsx,tsx}": {
+      "maxDuration": 10
+    }
+  }
+}

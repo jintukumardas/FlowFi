@@ -1,12 +1,11 @@
 import { http, createConfig } from 'wagmi'
-import { morphTestnet } from 'wagmi/chains'
-import { injected, walletConnect } from 'wagmi/connectors'
+import { injected } from 'wagmi/connectors'
 
-// Morph Testnet Configuration
+// Morph Holesky Testnet Configuration (Updated Chain ID)
 export const morphTestnetConfig = {
-  id: 2710,
-  name: 'Morph Testnet',
-  network: 'morph-testnet',
+  id: 2810,
+  name: 'Morph Holesky Testnet',
+  network: 'morph-holesky',
   nativeCurrency: {
     decimals: 18,
     name: 'Ether',
@@ -17,27 +16,24 @@ export const morphTestnetConfig = {
     default: { http: ['https://rpc-quicknode-holesky.morphl2.io'] },
   },
   blockExplorers: {
-    default: { name: 'Morph Explorer', url: 'https://explorer-testnet.morphl2.io' },
+    default: { name: 'Morph Explorer', url: 'https://explorer-holesky.morphl2.io' },
   },
   testnet: true,
 }
 
-// Contract Addresses (Update after deployment)
+// Contract Addresses (Deployed on Morph Holesky Testnet)
 export const CONTRACT_ADDRESSES = {
-  FLOWFI_CORE: '0x...', // Will be updated after deployment
-  REWARDS_MANAGER: '0x...', // Will be updated after deployment  
-  SPLIT_PAYMENTS: '0x...', // Will be updated after deployment
-  YIELD_VAULT: '0x...', // Will be updated after deployment
+  FLOWFI_CORE: '0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3',
+  REWARDS_MANAGER: '0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7',
+  SPLIT_PAYMENTS: '0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d', 
+  YIELD_VAULT: '0x3b4cAE62020487263Fc079312f9199a1b014BF6b',
 } as const
 
-// Wagmi Configuration
+// Simplified Wagmi Configuration (Injected wallet only for demo)
 export const config = createConfig({
   chains: [morphTestnetConfig],
   connectors: [
     injected(),
-    walletConnect({
-      projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-    }),
   ],
   transports: {
     [morphTestnetConfig.id]: http(),
